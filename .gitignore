@@ -20,7 +20,6 @@ desktop.ini
 .vscode/
 .idea/
 
-# Large binaries & cache (optional, tapi workspace screenshot bisa diignore jika repo ingin bersih, 
-# biarkan di-track jika ingin workspace ikut ter-backup di repo)
-# workspace/**/screenshots/
-# workspace/**/_reference/
+# Large binaries & cache (Workspace assets - Screenshots & References)
+workspace/**/screenshots/
+workspace/**/_reference/
