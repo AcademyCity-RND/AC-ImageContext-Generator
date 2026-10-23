@@ -6,6 +6,7 @@ from rich.table import Table
 
 from src.knowledge_manager import KnowledgeManager
 from src.vision_engine import VisionEngine
+from src.director import DirectorEngine
 
 app = typer.Typer(help="ImageContext-Generator: Generate inisiasi.txt from lab screenshots")
 console = Console()
@@ -97,6 +98,73 @@ def list_courses(
             table.add_row(cfg.stem, "Error loading", "", "")
     
     console.print(table)
+
+@app.command()
+def plan(
+    course: str = typer.Option(..., "--course", "-c", help="Course ID (e.g., kepl, ppg)"),
+    pertemuan: str = typer.Option(..., "--pertemuan", "-p", help="Pertemuan folder name (e.g., Per4, UTS)"),
+    repo_path: str = typer.Option(None, "--repo", "-r", help="Path to project repository for git timeline matching"),
+    workspace_root: str = typer.Option("workspace", "--workspace", "-w", help="Workspace root directory"),
+):
+    """Director Mode: Plan screenshot order and match against Git commits"""
+    course_clean = course.upper()
+    screenshots_dir = Path(workspace_root) / course_clean / "screenshots" / pertemuan
+    
+    if not screenshots_dir.exists():
+        console.print(f"[red]❌ Directory not found: {screenshots_dir}[/red]")
+        raise typer.Exit(1)
+        
+    director = DirectorEngine(repo_path=repo_path)
+    plan_items = director.plan_narrative(str(screenshots_dir))
+    
+    table = Table(title=f"🎬 Director Plan for {course_clean}/{pertemuan}")
+    table.add_column("#", style="cyan", justify="right")
+    table.add_column("Filename", style="green")
+    table.add_column("Mod Time", style="yellow")
+    table.add_column("Aligned Git Context", style="magenta")
+    
+    for item in plan_items[:25]:  # preview first 25
+        table.add_row(
+            str(item["index"]),
+            item["original_name"],
+            item["mtime"].strftime("%Y-%m-%d %H:%M:%S"),
+            item["git_context"][:60] + "..." if len(item["git_context"]) > 60 else item["git_context"]
+        )
+        
+    console.print(table)
+    if len(plan_items) > 25:
+        console.print(f"[dim]... and {len(plan_items) - 25} more screenshots[/dim]")
+    console.print(f"\n[bold green]Total planned:[/bold green] {len(plan_items)} screenshots.")
+
+@app.command()
+def generate_director(
+    course: str = typer.Option(..., "--course", "-c", help="Course ID (e.g., kepl, ppg)"),
+    pertemuan: str = typer.Option(..., "--pertemuan", "-p", help="Pertemuan folder name (e.g., UTS)"),
+    repo_path: str = typer.Option(None, "--repo", "-r", help="Path to project repository for git timeline matching"),
+    workspace_root: str = typer.Option("workspace", "--workspace", "-w", help="Workspace root directory"),
+    knowledge_dir: str = typer.Option("knowledge/courses", "--knowledge", "-k", help="Knowledge base directory"),
+):
+    """Director Mode: Plan and generate inisiasi.txt using multimodal vision + Git timeline"""
+    course_clean = course.upper()
+    screenshots_dir = Path(workspace_root) / course_clean / "screenshots" / pertemuan
+    output_file = Path(workspace_root) / course_clean / "inisiasi" / f"{pertemuan}_director.txt"
+    
+    if not screenshots_dir.exists():
+        console.print(f"[red]❌ Directory not found: {screenshots_dir}[/red]")
+        raise typer.Exit(1)
+        
+    director = DirectorEngine(repo_path=repo_path)
+    plan_items = director.plan_narrative(str(screenshots_dir))
+    
+    km = KnowledgeManager(knowledge_dir)
+    ve = VisionEngine()
+    
+    ve.generate_director_inisiasi(
+        plan_items=plan_items,
+        course_id=course.lower(),
+        knowledge_manager=km,
+        output_file=str(output_file)
+    )
 
 if __name__ == "__main__":
     app()

@@ -32,17 +32,19 @@ class VisionEngine:
         self.model = genai.GenerativeModel(model_name)
         self.model_name = model_name
     
-    def analyze_image(self, image_path: str, context_prompt: str = "") -> str:
-        """Analyze a single image using Gemini Vision"""
+    def analyze_image_with_context(self, image_path: str, git_context: str, general_context: str = "") -> str:
+        """Analyze a single image with specific git commit context"""
         try:
             with Image.open(image_path) as img:
                 prompt = f"""
-{context_prompt}
+Git Commit Context: {git_context}
+General Context: {general_context}
 
 Berdasarkan gambar ini, buat satu baris format inisiasi:
 {{index}}.png | {{label}} | Konteks: {{context}} | Arah: {{direction}}
 
 Aturan:
+- Gunakan Git Commit Context untuk mengarahkan penjelasan teknis.
 - label: Judul singkat gambar (maksimal 50 karakter)
 - Konteks: Penjelasan teknis apa yang ditampilkan (paling penting, singkat, teknis)
 - Arah: Arah pembahasan/pelajaran (mis: implementasi CI/CD, pengaturan docker, dll)
@@ -60,93 +62,57 @@ Aturan:
             console.print(f"[yellow]⚠️ Error analyzing {image_path}: {e}[/yellow]")
             return ""
     
-    def generate_course_inisiasi(self, 
-                                 course_id: str,
-                                   screenshots_dir: str,
+    def generate_director_inisiasi(self,
+                                   plan_items: List[Dict[str, Any]],
+                                   course_id: str,
                                    knowledge_manager: "KnowledgeManager",
                                    output_file: str) -> Dict[str, Any]:
-        """Generate inisiasi.txt for all screenshots in a course folder"""
-        console.print(f"\n[bold blue]🔍 Processing {course_id} screenshots...[/bold blue]")
+        """Generate inisiasi.txt using Director Mode planned items and git context"""
+        console.print(f"\n[bold magenta]🎬 Running Director Mode Generation for {course_id}...[/bold magenta]")
         
-        # Get all numbered PNG files, sorted
-        img_dir = Path(screenshots_dir)
-        image_files = []
-        
-        for f in img_dir.glob("*.png"):
-            stem = f.stem
-            if stem.isdigit():
-                image_files.append((int(stem), f))
-        
-        image_files.sort(key=lambda x: x[0])
-        
-        if not image_files:
-            console.print(f"[yellow]⚠️ No PNG images found in {screenshots_dir}[/yellow]")
-            return {"total": 0, "generated": 0, "errors": 0}
-        
-        # Build context from knowledge base
-        course_context = knowledge_manager.build_course_context(
-            course_id, 
-            os.path.join(screenshots_dir, "..", "_reference")
-        )
+        course_context = knowledge_manager.build_course_context(course_id)
         
         generated_lines = []
-        total = len(image_files)
+        total = len(plan_items)
         generated = 0
         errors = 0
         
-        console.print(f"   Memproses {total} gambar...")
+        console.print(f"   Memproses {total} screenshot terencana...")
         
-        for idx, (num, path) in enumerate(image_files, 1):
-            # Build per-image context with index
-            image_prompt = f"""
-{course_context}
-
----
-GAMBAR {idx} dari {total}: {path.name}
-
-TASK: Analisis gambar ini dan berikan output dalam format berikut:
-{idx}.png | Label | Konteks | Arah
-
-- Label: Judul visi singkat dari gambar
-- Konteks: Apa yang terjadi teknis (bug CI, docker config, Laravel routing, dll)
-- Arah: Apa yang perlu dibahas/implementasi berikutnya
-
-Jawab hanya dengan satu baris format, tanpa pemaparan panjang.
-"""
+        for idx, item in enumerate(plan_items, 1):
+            path = item["path"]
+            git_ctx = item["git_context"]
             
-            result = self.analyze_image(str(path), image_prompt)
+            console.print(f"   [{idx}/{total}] Menganalisis {path.name} (Git: {git_ctx[:30]}...)")
             
-            if result:
-                generated_lines.append(result)
+            result_line = self.analyze_image_with_context(
+                str(path),
+                git_context=git_ctx,
+                general_context=course_context
+            )
+            
+            if result_line:
+                # Pastikan nomor urut sesuai indeks baru hasil planning
+                # Format dari model: {index}.png | label | Konteks: ... | Arah: ...
+                # Kita normalisasi bagian depannya agar konsisten
+                parts = result_line.split("|", 1)
+                clean_line = f"{idx}.png | {parts[1].strip()}" if len(parts) > 1 else f"{idx}.png | {result_line}"
+                generated_lines.append(clean_line)
                 generated += 1
             else:
-                # Fallback manual format
-                fallback = f"{idx}.png | Gambar {idx} | Konteks: Analisis visual Gambar {idx} | Arah: Review manual"
-                generated_lines.append(fallback)
+                # Fallback jika gagal
+                generated_lines.append(f"{idx}.png | Dokumentasi Teknis {idx} | Konteks: {git_ctx} | Arah: Evaluasi UTS")
                 errors += 1
-            
-            # Progress bar
-            if idx % 5 == 0 or idx == total:
-                console.print(f"   Progress: {idx}/{total} ({100*idx//total}%)")
+                
+        # Tulis ke file output
+        out_path = Path(output_file)
+        out_path.parent.mkdir(parents=True, exist_ok=True)
         
-        # Write output file
-        output_path = Path(output_file)
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        
-        # Header/footer format
-        header = "# ========================================================"
+        header = "# ========================================================\n# FORMAT INISIASI UTS - DIRECTOR MODE\n# ========================================================"
         footer = "# ========================================================"
-        generated_content = "\n".join([header] + generated_lines + [footer])
         
-        with open(output_path, 'w', encoding='utf-8') as f:
-            f.write(generated_content)
+        content = header + "\n" + "\n".join(generated_lines) + "\n" + footer
+        out_path.write_text(content, encoding="utf-8")
         
-        console.print(f"\n[green]✅ Selesai! Dioutputkan ke: {output_path}[/green]")
-        console.print(f"   Total: {total} gambar, Digen: {generated}, Error: {errors}")
-        
-        return {
-            "total": total,
-            "generated": generated,
-            "errors": errors,
-            "output_file": str(output_path)
-        }
+        console.print(f"\n[green]✅ Director Mode generated successfully: {output_file}[/green]")
+        return {"total": total, "generated": generated, "errors": errors}
