@@ -20,17 +20,29 @@ cp .env.example .env
 # Edit .env dan isi GOOGLE_API_KEY
 ```
 
-### Struktur Workspace
-Panduan lengkap penempatan screenshot, dokumen referensi, dan output tersedia di:
-👉 **[`workspace/README.md`](./workspace/README.md)**
+### Struktur Workspace & Placeholder
+
+Folder `workspace/` yang berisi data pribadi Anda (gambar, slide dosen, output) **sudah 100% di-ignore oleh Git** sehingga tidak akan pernah ter-push ke repository publik.
+
+Untuk memulai, repositori ini menyediakan template placeholder di `workspace.template/`:
+```bash
+# Salin folder template menjadi workspace lokal Anda
+cp -r workspace.template workspace
+```
+Atau Anda bisa membuat folder `workspace/` sendiri dengan struktur berikut:
 
 ```text
 workspace/
-├── <COURSE>/           # Misal: KEPL, PPG
-│   ├── screenshots/    # Taruh screenshot per pertemuan di sini (Per1/, UTS/, dsb.)
-│   ├── _reference/     # Taruh slide kuliah/modul PDF di sini (opsional)
-│   └── inisiasi/       # File inisiasi.txt akan otomatis digenerate ke sini
+├── <KODE_MATKUL>/         # Contoh: KEPL, PPG (bisa ditambah sendiri)
+│   ├── screenshots/       # [ROOT 1] Taruh tangkapan layar praktikum per pertemuan (Per1/, UTS/, dsb.)
+│   ├── _reference/        # [ROOT 2] Taruh slide kuliah/modul PDF referensi di sini (opsional)
+│   └── inisiasi/          # [ROOT 3] Berkas inisiasi.txt hasil analisis AI akan otomatis tersimpan di sini
 ```
+
+Penjelasan fungsi setiap root direktori di dalam mata kuliah:
+1. **`screenshots/`**: Tempat menaruh seluruh gambar bukti praktikum. Anda bisa membuat subfolder per pertemuan (misal `Per1/`, `Per2/`, `UTS/`). File bisa berupa format `1.png` - `N.png` atau format raw bawaan OS (bisa dirapikan otomatis dengan perintah `organize`).
+2. **`_reference/`**: Tempat menaruh materi pendukung praktikum (slide presentasi PPTX, panduan modul PDF, kisi-kisi soal). AI Vision akan menyerap konteks materi ini untuk mempertajam analisis gambar.
+3. **`inisiasi/`**: Folder output. Tool akan meletakkan hasil sintesis metadata visual (`<Pertemuan>.txt`) di sini, siap diumpankan ke generator dokumen laporan utama.
 
 ---
 

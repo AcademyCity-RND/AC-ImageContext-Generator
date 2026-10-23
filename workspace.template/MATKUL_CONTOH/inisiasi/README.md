@@ -1,0 +1,1 @@
+Hasil berkas inisiasi.txt (misal: Per4.txt, UTS_director.txt) yang digenerate oleh AI akan otomatis tersimpan di sini.

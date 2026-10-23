@@ -1,0 +1,1 @@
+Taruh file screenshot praktikum Anda di sini (misal: Per1/, UTS/, dll.). Format nama bisa berurutan (1.png, 2.png) atau raw, lalu rapikan dengan perintah `python -m src.cli organize`.
