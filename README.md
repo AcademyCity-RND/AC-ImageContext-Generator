@@ -5,17 +5,11 @@ Generator otomatis untuk mengekstrak konteks visual dari serangkaian gambar tang
 
 ---
 
-## 📌 Spesifikasi Utama & Master PRD
-Dokumentasi lengkap, batasan sistem, diagram alur, dan kontrak format data tersedia di:
-👉 **[`PRD.md`](./PRD.md)**
-
----
-
 ## 🚀 Quick Start
 
 ### Prasyarat
 - Python 3.11+
-- Google API Key (Gemini 1.5 Flash Free Tier) → set di `.env` sebagai `GOOGLE_API_KEY`
+- Google API Key (Gemini API Free Tier) → set di `.env` sebagai `GOOGLE_API_KEY`
 
 ### Instalasi
 ```bash
@@ -26,26 +20,16 @@ cp .env.example .env
 # Edit .env dan isi GOOGLE_API_KEY
 ```
 
-### Struktur Workspace (Contoh)
-```
+### Struktur Workspace
+Panduan lengkap penempatan screenshot, dokumen referensi, dan output tersedia di:
+👉 **[`workspace/README.md`](./workspace/README.md)**
+
+```text
 workspace/
-├── KEPL/
-│   ├── screenshots/
-│   │   ├── Per1/ (1.png, 2.png, ...)
-│   │   ├── Per2/
-│   │   └── Per4/ (1.png - 17.png)
-│   ├── inisiasi/
-│   │   ├── Per1.txt
-│   │   └── Per4.txt
-│   └── _reference/
-│       ├── Pertemuan-02-Manajemen GitHub & Prinsip CI.pdf
-│       └── Pertemuan-04-CI-CD untuk Vue.js.pdf
-└── PPG/
-    ├── screenshots/
-    │   └── Per1/ ...
-    ├── inisiasi/
-    └── _reference/
-        └── PPG_Materi_Pertemuan 1.pdf ...
+├── <COURSE>/           # Misal: KEPL, PPG
+│   ├── screenshots/    # Taruh screenshot per pertemuan di sini (Per1/, UTS/, dsb.)
+│   ├── _reference/     # Taruh slide kuliah/modul PDF di sini (opsional)
+│   └── inisiasi/       # File inisiasi.txt akan otomatis digenerate ke sini
 ```
 
 ---
@@ -121,12 +105,15 @@ output_template:
 - [x] Course configs: KEPL, PPG
 - [x] Tested: KEPL Per4 (17 screenshots → 17 entries)
 
-#### 🔄 v0.2.0 — Holistic Narrative Planner (Ingin Diuji Sekarang!)
-- [ ] **Director Mode:** Analisis holistik seluruh screenshot sekaligus (single request) untuk menentukan urutan logis narasi (setup → build → deploy → verify)
-- [ ] **Repo-Guided Context Matching:** Flag `--repo <path>` untuk ekstrak git timeline & cross-reference dengan screenshot (validasi alur praktikum teknis)
-- [ ] **Smart Grouping:** AI mengelompokkan screenshot secara otomis berdasarkan konteks (error vs troubleshooting vs konfigurasi)
-- [ ] **Auto-Rename Dry-Run:** Preview urutan narasi sebelum rename file asli (--dry-run flag)
-- [ ] **Fallback Local Sort:** Urutan berdasarkan timestamp filename (`mtime`) jika user nggak mau pakai AI
+#### ✅ v0.2.0 — Holistic Narrative Planner / Director Mode (Selesai!)
+- [x] **Director Mode:** Perencanaan narasi holistik menyelaraskan screenshot dengan alur kerja teknis
+- [x] **Repo-Guided Context Matching:** Flag `--repo <path>` mengekstrak riwayat git commit target & mencocokkannya dengan screenshot
+- [x] **CLI Commands Baru:**
+  - `python -m src.cli plan -c <course> -p <pertemuan> -r <repo>` (Preview narasi & commit mapping)
+  - `python -m src.cli organize -c <course> -p <pertemuan> -r <repo>` (Otomatis copy/rename ke format terurut `1.png` - `N.png`)
+  - `python -m src.cli generate-director -c <course> -p <pertemuan> -r <repo>` (Generate inisiasi berbasis narasi Git)
+- [x] **Direct PIL Streaming:** Integrasi cepat dengan `models/gemini-3.1-flash-lite` tanpa ketergantungan Google File API
+- [x] **Tested:** KEPL UTS (63 screenshots terpetakan sempurna ke 49 commit & 14 bukti evaluasi SS-01 s.d. SS-14)
 
 #### 🎯 v0.3.0 — Multi-Provider & UX
 - [ ] Support OpenAI GPT-4o-mini / Anthropic Claude sebagai fallback vision provider
