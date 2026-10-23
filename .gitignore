@@ -20,6 +20,12 @@ desktop.ini
 .vscode/
 .idea/
 
-# Large binaries & cache (Workspace assets - Screenshots & References)
+# Workspace data (Personal lab assets & generated outputs are ignored)
 workspace/**/screenshots/
 workspace/**/_reference/
+workspace/**/inisiasi/*
+!workspace/**/inisiasi/.gitkeep
+!workspace/**/.gitkeep
+
+# Company confidential / Internal Spec
+PRD.md
