@@ -1,0 +1,26 @@
+course_id: "jaringan-komputer"
+course_name: "Praktikum Jaringan Komputer"
+code: "JARKOM02"
+description: "Konfigurasi perangkat jaringan, routing, switching, protokol komunikasi, dan analisis paket data."
+
+analysis_guidelines:
+  focus_areas:
+    - "Topologi jaringan (Cisco Packet Tracer, GNS3, atau fisik)"
+    - "Konfigurasi IP (IPv4/IPv6, Subnetting, Gateway, DNS)"
+    - "Routing Table, Static Routing, Dynamic Routing (OSPF, BGP)"
+    - "Terminal CLI: ping, traceroute, ipconfig/ifconfig, netstat, ssh"
+    - "Analisis Wireshark: struktur paket data, TCP/UDP, DNS query"
+  technical_terms:
+    - "TCP/IP Stack"
+    - "Subnet Mask & Default Gateway"
+    - "OSI Layer Integration"
+    - "VLAN & Trunking"
+    - "Ping/ICMP Status"
+    - "Packet Sniffing & Filtering"
+
+output_template:
+  line_pattern: "{index}.png | {label} | Konteks: {context} | Arah: {direction}"
+  fallback:
+    label: "Konfigurasi Jaringan Komputer"
+    context: "Langkah-langkah pengaturan atau pengujian konektivitas jaringan"
+    direction: "Evaluasi keberhasilan transmisi data dan konfigurasi protokol"

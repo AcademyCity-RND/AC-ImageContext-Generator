@@ -1,0 +1,43 @@
+Ada gambar 1-23.png
+
+1 vercel.json
+2 frontend.yml lint
+3 frontend.yml test
+4 frontend.yml build
+5 frontend.yml deploy
+
+note sebelah kiri repo dari organisasi saya sendiri, sebelah kanan repo dari organisasi matkul yaitu KEPL2026 (saya melakukan push ke kedua repo, karena repo KEPL2026 berdasarkan konfirmasi dosen sedang terkena flag dan dalam proses aju banding, repo KEPL tidak bisa melakukan GitHub actions, makanya saya buat di repo organisasi yang saya buat sendiri)
+
+berikut source code repo saya dan KEPL2026
+- KEPL2026: https://github.com/KEPL2026/evolusi-pl-24-542159-SV-25009-v1
+- Repo saya: https://github.com/AcademyCity-RND/evolusi-pl-24-542159-SV-25009-v2
+
+6 Struktur Frontend Vue yang sudah dibuat
+7 Hasil tampilan frontend vue (Homeview di local)
+8 Hasil tampilan frontend vue (Portofolio di local, sukses terhubung laravel)
+9 Hasil tampilan frontend vue (Portofolio di local, handling Ketika tidak terhubung dengan laravel)
+10 Membuat VERCEL_TOKEN
+11 Membuat VERCEL_ORG_ID dan VERCEL_PROJECT_ID (npx vercel link > auto off > customise off)
+12 Buka Settings pada Repo > Secrets and Variable > Actions > Fokus ke Repository secrets
+13 Isi dengan 3 secrets yang sudah dibuat sebelumnya (untuk token vercel dan vercel org id sama, yang berbeda vercel project id)
+14 Tampilan vercel projects yang sudah dibuat (tidak perlu dihubungkan ke repo GitHub karena deployment akan diurus GitHub actions)
+
+alur pipeline CI/CD frontend lint>test>build>deploy
+15 branch feat GitHub Actions CI/CD pipeline frontend merah (lint succsess, vitest gagal karena ada unit test yang digagalkan, build skip karena vitetest gagal, deploy skip karena diset di main), ci.yml normal
+16 branch feat GitHub Actions CI/CD pipeline frontend merah (berikut log nya), ci.yml normal
+17 branch feat GitHub Actions CI/CD pipeline frontend setelah diperbaiki (lint sukses, test sukses, build sukses, deploy skip karena di set di main), ci.yml normal
+18 pr feat ke dev
+19 branch dev GitHub Actions CI/CD pipeline frontend (lint sukses, test sukses, build sukses, deploy skip karena di set di main), ci.yml normal
+20 pr dev ke main
+21 branch main GitHub Actions CI/CD pipeline frontend (lint sukses, test sukses, build sukses, deploy sukses), ci.yml normal (prod membutuhkan persetujuan reviewer)
+22 Sebagai reviewer menyetujui prod
+23 Tampilan branch main sudah berhasil semua (semua hijau)
+24 Log Success frontend.yml (lint)
+25 Log Success frontend.yml (test)
+26 Log Success frontend.yml (build)
+27 Log Success frontend.yml (deploy)
+
+28 hasil deploy GitHub action ke vercel, kiri repo organisasi pribadi (untuk link vercelnya berikut https://academycity-rnd-frontend.vercel.app/), kanan dari repo organisasi (masih kosongan karena GitHub actionnya belum bisa, karena kemarin organisasinya masi flag dan aju banding)
+
+29 Hasil tampilan frontend vue (Homeview di vercell)
+30 Hasil tampilan frontend vue (Portofolio di vercell, handling Ketika tidak terhubung dengan Laravel, karena Laravel tidak dideploy)

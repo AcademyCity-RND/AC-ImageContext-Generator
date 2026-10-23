@@ -1,0 +1,55 @@
+course_id: "ppg"
+course_name: "Praktikum Pengembangan Game"
+code: "PPG"
+semester: 5
+description: |
+  Praktikum PPG (Praktikum Pengembangan Game) menggunakan Unreal Engine 5.
+  Fokus pada Blueprint Visual Scripting, Component System, Save Game & Struct,
+  serta implementasi gameplay mechanics.
+
+analysis_guidelines:
+  focus_areas:
+    - "Unreal Engine 5 Editor interface dan navigation"
+    - "Blueprint Visual Scripting (Event Graph, Construction Script)"
+    - "Actor Components dan Component-based architecture"
+    - "Save Game system dengan Struct data"
+    - "Input mapping dan Enhanced Input system"
+    - "UMG Widget Blueprint untuk UI/HUD"
+    - "Level design dan actor placement"
+    - "Debugging Blueprint (Print String, Breakpoints, Watch)"
+
+  technical_terms:
+    - "Unreal Engine 5"
+    - "Blueprint Visual Scripting"
+    - "Actor / Pawn / Character"
+    - "Component (StaticMesh, Camera, SpringArm, etc)"
+    - "SaveGame / SaveGameObject"
+    - "Struct / Data Structure"
+    - "Enhanced Input / Input Mapping Context"
+    - "UMG / Widget Blueprint"
+    - "Event Graph / Construction Script"
+    - "Level Blueprint"
+    - "Print String / Debug Draw"
+    - "Breakpoint / Watch Variable"
+    - "GameMode / GameState"
+    - "PlayerController"
+    - "Gameplay Tags"
+
+output_template:
+  line_pattern: "{index}. {label} | {context}"
+  header: "# ========================================================"
+  footer: "# ========================================================"
+
+reference_mapping:
+  - pertemuan: "Per1"
+    pdf_files:
+      - "PPG_Materi_Pertemuan 1.pdf"
+  - pertemuan: "Per2"
+    pdf_files:
+      - "PPG_Materi_Pertemuan 2.pdf"
+  - pertemuan: "Per3"
+    pdf_files:
+      - "PPG_Materi_Pertemuan 3.pdf"
+  - pertemuan: "Per4"
+    pdf_files:
+      - "PPG_Materi_Pertemuan 4.pdf"

@@ -1,0 +1,27 @@
+inisiasi
+1 buat project dengan template Third Person dan nama yang sesuai format
+2 Menambahkan Blueprint Class Pilih Parent Class sebagai actor component dan namakan sesuai format BPC_Health
+3 Tambahkan function ModifyHealth
+4 Tambahkan Variable (MaxHealth dan CurrentHealth)
+5 Tambahkan Event Dispatche (OnDeath)
+6 Tampilan awal eventgraph BPC_Health
+7 Logika sederhana Begin Play (Begin Play> Get MaxHealth dan Set sebagai CurrentHealth, MaxHealth set 100)
+8 Logika sederhana function ModifyHealth (tambahkan variable input Health dengan value 100)
+9 Tampilan awal eventgraph BP_TPP
+10 Menambahkan event ondeath ke BP_TPP
+11 Buat Blueprint interface (BPI_Overlap)
+12 tampilan semua blueprint yang ada
+13 tambahkan BPC_Health ke BP_TPP
+14 Logika sederhana ondeath (jangan lupa juga di bind ke BP_TPP)
+15 pada BPI_Overlap tambahkan function TakeDamage dan tambahkan AmountDamage sebagai input
+16 implement BPI_Overlap
+17 terlihat BPI_Overlap berhasil diimplement, fungtion Take Damage muncul)
+18 Logika sederhana BPC_Health yang diimplementasikan
+19 Buat BP_Collision dan uncheck Hidden in Game
+20 Logika Sederhana Eventgraph BP_Colission
+21 tambahkan instance editable
+22 ubah value sebelum melalui level
+Hasil Akhir (jelaskan cara kerjanya, belum da gambarnya, buatin dulu penjelasannya)
+23 Before hit collision (Ketika play, karakter normal, dan print begin play health saat ini "100")
+24 After hit collision (masi normal, tapi print hp berkurang tiap hit collision, "70" misal karena -30)
+25 OnDeath (ketika health 0 maka print "Tewas"

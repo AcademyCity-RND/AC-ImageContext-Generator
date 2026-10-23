@@ -1,0 +1,102 @@
+import os
+import typer
+from pathlib import Path
+from rich.console import Console
+from rich.table import Table
+
+from src.knowledge_manager import KnowledgeManager
+from src.vision_engine import VisionEngine
+
+app = typer.Typer(help="ImageContext-Generator: Generate inisiasi.txt from lab screenshots")
+console = Console()
+
+@app.command()
+def scan(
+    course: str = typer.Option(..., "--course", "-c", help="Course ID (e.g., kepl, ppg)"),
+    pertemuan: str = typer.Option(..., "--pertemuan", "-p", help="Pertemuan folder name (e.g., Per4)"),
+    workspace_root: str = typer.Option("workspace", "--workspace", "-w", help="Workspace root directory"),
+):
+    """Scan and list screenshots in a pertemuan folder"""
+    screenshots_dir = Path(workspace_root) / course.upper() / "screenshots" / pertemuan
+    
+    if not screenshots_dir.exists():
+        console.print(f"[red]❌ Directory not found: {screenshots_dir}[/red]")
+        raise typer.Exit(1)
+    
+    images = sorted([f for f in screenshots_dir.glob("*.png") if f.stem.isdigit()], 
+                    key=lambda x: int(x.stem))
+    
+    table = Table(title=f"Screenshots in {course.upper()}/{pertemuan}")
+    table.add_column("#", style="cyan")
+    table.add_column("Filename", style="green")
+    table.add_column("Size", style="yellow")
+    
+    for img in images:
+        stat = img.stat()
+        size_mb = stat.st_size / (1024 * 1024)
+        table.add_row(img.stem, img.name, f"{size_mb:.2f} MB")
+    
+    console.print(table)
+    console.print(f"\nTotal: {len(images)} images")
+
+@app.command()
+def generate(
+    course: str = typer.Option(..., "--course", "-c", help="Course ID (e.g., kepl, ppg)"),
+    pertemuan: str = typer.Option(..., "--pertemuan", "-p", help="Pertemuan folder name (e.g., Per4)"),
+    workspace_root: str = typer.Option("workspace", "--workspace", "-w", help="Workspace root directory"),
+    knowledge_dir: str = typer.Option("knowledge/courses", "--knowledge", "-k", help="Knowledge base directory"),
+):
+    """Generate inisiasi.txt from screenshots using Vision AI + knowledge base"""
+    course_clean = course.upper()
+    screenshots_dir = Path(workspace_root) / course_clean / "screenshots" / pertemuan
+    output_file = Path(workspace_root) / course_clean / "inisiasi" / f"{pertemuan}.txt"
+    
+    if not screenshots_dir.exists():
+        console.print(f"[red]❌ Screenshots directory not found: {screenshots_dir}[/red]")
+        raise typer.Exit(1)
+    
+    km = KnowledgeManager(knowledge_dir)
+    ve = VisionEngine()
+    
+    result = ve.generate_course_inisiasi(
+        course_id=course.lower(),
+        screenshots_dir=str(screenshots_dir),
+        knowledge_manager=km,
+        output_file=str(output_file)
+    )
+    
+    if result["errors"] > 0:
+        console.print(f"[yellow]⚠️ Completed with {result['errors']} errors[/yellow]")
+    else:
+        console.print("[green]✅ Generation completed successfully![/green]")
+
+@app.command()
+def list_courses(
+    knowledge_dir: str = typer.Option("knowledge/courses", "--knowledge", "-k", help="Knowledge base directory"),
+):
+    """List available course configurations"""
+    km = KnowledgeManager(knowledge_dir)
+    configs = list(Path(knowledge_dir).glob("*.yaml"))
+    
+    table = Table(title="Available Courses")
+    table.add_column("Course ID", style="cyan")
+    table.add_column("Name", style="green")
+    table.add_column("Code", style="yellow")
+    table.add_column("Semester", style="magenta")
+    
+    for cfg in configs:
+        try:
+            course = km.load_course_config(cfg.stem)
+            table.add_row(
+                cfg.stem,
+                course.get("course_name", ""),
+                course.get("code", ""),
+                str(course.get("semester", ""))
+            )
+        except:
+            table.add_row(cfg.stem, "Error loading", "", "")
+    
+    console.print(table)
+
+if __name__ == "__main__":
+    app()

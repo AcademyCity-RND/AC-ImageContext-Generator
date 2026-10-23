@@ -1,0 +1,25 @@
+course_id: "pemrograman-web"
+course_name: "Praktikum Pemrograman Web"
+code: "WEB01"
+description: "Pengembangan aplikasi web front-end, back-end API, routing, state management, dan database integration."
+
+analysis_guidelines:
+  focus_areas:
+    - "Antarmuka Pengguna (UI/UX), form input, tombol aksi, dan tabel data"
+    - "Browser DevTools: Network tab (status HTTP, request payload, response data) dan Console tab (log/error)"
+    - "Editor kode (VS Code): file structure, handler route, controller, atau komponen UI"
+    - "Terminal output: server running log, npm/yarn build, migration database"
+  technical_terms:
+    - "Endpoint RESTful API"
+    - "HTTP Status Code (200 OK, 201 Created, 400 Bad Request, 404 Not Found, 500 Internal Server Error)"
+    - "State Management"
+    - "Form Validation & Error Handling"
+    - "Responsive Layout"
+    - "Authentication & Authorization (JWT, Session)"
+
+output_template:
+  line_pattern: "{index}.png | {label} | Konteks: {context} | Arah: {direction}"
+  fallback:
+    label: "Antarmuka Aplikasi Web"
+    context: "Tangkapan layar pengujian fitur aplikasi web"
+    direction: "Analisis fungsionalitas dan respons sistem terhadap aksi pengguna"

@@ -1,0 +1,36 @@
+Ada gambar 1-23.png
+
+1 deploy.sh
+2 ci.yml build
+3 ci.yml test
+4 ci.yml test lanjutannya
+5 ci.yml staging dan production
+
+note sebelah kiri repo dari organisasi saya sendiri, sebelah kanan repo dari organisasi matkul yaitu KEPL2026 (saya melakukan push ke kedua repo, karena repo KEPL2026 berdasarkan konfirmasi dosen sedang terkena flag dan dalam proses aju banding, repo KEPL tidak bisa melakukan GitHub actions, makanya saya buat di repo organisasi yang saya buat sendiri)
+
+berikut source code repo saya dan KEPL2026
+- KEPL2026: https://github.com/KEPL2026/evolusi-pl-24-542159-SV-25009-v1
+- Repo saya: https://github.com/AcademyCity-RND/evolusi-pl-24-542159-SV-25009-v2
+
+6 Tampilan awal branch main kondisi awal (bekas pertemuan 1)
+7 hasil GitHub action branch feat (Build berhasil, Test sengaja disalahkan agar merah, Staging di set berjalan di branch dev maka skip, production di set berjalan di branch main maka skip)
+8 hasil GitHub action branch feat (Test sudah diperbaiki, maka build dan test berhasil, staging dan production skip karena masi di branch feat)
+9 hasil GitHub action branch dev (Build, Test, Staging Success, production skip karena masi di branch dev)
+10 hasil GitHub action branch main (Build, Test, Staging, Production pending karena memperlukan persetujuan review)
+11 hasil GitHub action branch main (Memberikan persetujuan untuk production menggunakan akun yang sudah di set sebagai reviewer)
+12 hasil GitHub action branch main (Setelah disetujui maka Build, Test, Staging, Production sukses dijalankan)
+
+13 Log Test yang sengaja digagalkan (merah)
+14 Log Build success
+15 Log Test Success
+16 Log Staging Success
+17 Log Production Success
+
+Cara melalukan setting environment production (agar khusus production memerlukan persetujuan reviewer, dan melakukan setting akun GitHub kita sebagai reviewer)
+18 Buka Settings >> Environments >> Klik New Environments untuk membuat Environments baru
+19 Terbuka halaman ini masukkan nama environment (kali ini production)
+20 Environments telah terbuat terlihat dari alert (centang Required reviewers untuk mengaktifkan agar memperlukan review, cari nama GitHub kita dan tambahkan sebagai reviewer, tekan save protection rule untuk menyimpan)
+21 Environments berhasil dibuat sesuai alert maka environments sudah dapat bekerja sesuai dengan penjelasan gambar 10-12 sebelumnya
+
+22 Riwayat PR dari feat ke dev
+23 Riwayat PR dari dev ke main

@@ -1,0 +1,62 @@
+course_id: "kepl"
+course_name: "Konstruksi dan Evolusi Perangkat Lunak"
+code: "KEPL"
+semester: 5
+description: |
+  Praktikum KEPL (Konstruksi dan Evolusi Perangkat Lunak) semester 5.
+  Fokus pada CI/CD, Docker multi-stage, GitHub Actions, GHCR, Laravel 11, Vue 3,
+  dan deployment ke production (Vercel, Railway/Render).
+
+analysis_guidelines:
+  focus_areas:
+    - "Docker multi-stage build (builder + runtime Alpine)"
+    - "Non-root user configuration (www-data)"
+    - "HEALTHCHECK Laravel 11 endpoint /up"
+    - "GitHub Actions CI/CD pipeline (build, test, deploy)"
+    - "GHCR (GitHub Container Registry) publish workflow"
+    - "Docker Compose untuk local development"
+    - "PR workflow dan rebasing commit history"
+    - "Deployment approval gates (staging/production)"
+    - "PaaS dashboard monitoring (Railway/Render)"
+
+  technical_terms:
+    - "multi-stage Dockerfile"
+    - "composer:2.7"
+    - "php:8.3-cli-alpine"
+    - "www-data user"
+    - "HEALTHCHECK"
+    - "GitHub Actions"
+    - "GHCR (ghcr.io)"
+    - "commit SHA tagging"
+    - "BuildKit"
+    - "Docker Desktop Builds"
+    - "CI/CD pipeline"
+    - "Automated Unit & Feature Tests (PHPUnit/Pest)"
+    - "Frontend CI (Vite, Vitest, ESLint)"
+    - "Vercel deployment"
+    - "Railway/Render PaaS"
+    - "GHCR package visibility (private/public)"
+    - "Pending deployment approval"
+    - "Rebase / squash commit history"
+
+output_template:
+  line_pattern: "{index}. {label} | {context}"
+  header: "# ========================================================"
+  footer: "# ========================================================"
+
+reference_mapping:
+  - pertemuan: "Per1"
+    pdf_files:
+      - "Pertemuan-01-Pendahuluan.pdf"  # jika ada
+  - pertemuan: "Per2"
+    pdf_files:
+      - "Pertemuan-02-Manajemen GitHub & Prinsip CI.pdf"
+  - pertemuan: "Per3"
+    pdf_files:
+      - "Pertemuan-03-Continuous Deployment untuk Laravel.pdf"
+  - pertemuan: "Per4"
+    pdf_files:
+      - "Pertemuan-04-CI-CD untuk Vue.js.pdf"
+  - pertemuan: "Per5"
+    pdf_files:
+      - "Pertemuan-05-Pengenalan Docker & Containerization.pdf"
