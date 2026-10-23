@@ -134,7 +134,45 @@ def plan(
     console.print(table)
     if len(plan_items) > 25:
         console.print(f"[dim]... and {len(plan_items) - 25} more screenshots[/dim]")
-    console.print(f"\n[bold green]Total planned:[/bold green] {len(plan_items)} screenshots.")
+        console.print(f"\n[bold green]Total planned:[/bold green] {len(plan_items)} screenshots.")
+
+@app.command()
+def organize(
+    course: str = typer.Option(..., "--course", "-c", help="Course ID (e.g., kepl, ppg)"),
+    pertemuan: str = typer.Option(..., "--pertemuan", "-p", help="Pertemuan folder name (e.g., UTS)"),
+    repo_path: str = typer.Option(None, "--repo", "-r", help="Path to project repository for git timeline matching"),
+    workspace_root: str = typer.Option("workspace", "--workspace", "-w", help="Workspace root directory"),
+    copy: bool = typer.Option(True, "--copy/--rename", help="Copy files to a new 'organized' folder or rename in place (default: copy)"),
+):
+    """Director Mode: Organize screenshots into 1.png, 2.png, ... based on narrative plan"""
+    course_clean = course.upper()
+    screenshots_dir = Path(workspace_root) / course_clean / "screenshots" / pertemuan
+    
+    if not screenshots_dir.exists():
+        console.print(f"[red]❌ Directory not found: {screenshots_dir}[/red]")
+        raise typer.Exit(1)
+        
+    director = DirectorEngine(repo_path=repo_path)
+    plan_items = director.plan_narrative(str(screenshots_dir))
+    
+    target_dir = screenshots_dir if not copy else screenshots_dir.parent / f"{pertemuan}_organized"
+    target_dir.mkdir(parents=True, exist_ok=True)
+    
+    console.print(f"\n[bold yellow]📦 Organizing {len(plan_items)} images to {target_dir.name}...[/bold yellow]")
+    
+    import shutil
+    for item in plan_items:
+        src = item["path"]
+        ext = src.suffix
+        dest = target_dir / f"{item['index']}{ext}"
+        
+        if copy:
+            shutil.copy2(src, dest)
+        else:
+            # Atomic rename if in same folder
+            src.rename(dest)
+            
+    console.print(f"[green]✅ Successfully organized into {target_dir}[/green]")
 
 @app.command()
 def generate_director(
