@@ -25,6 +25,8 @@ Menjadi jembatan cerdas (*intelligent bridge*) tanpa friksi yang mengotomasi eks
 * ✅ **DI DALAM RUANG LINGKUP (IN-SCOPE):**
   * Memindai direktori screenshot yang telah dinamai secara terurut (`1.png`, `2.png`, ..., `x.png`).
   * Validasi integritas urutan gambar (mendeteksi file hilang, ekstensi non-standar, atau *gap* penomoran).
+  * **Holistic Narrative Planner (Director Mode):** Analisis **keseluruhan** rangkaian gambar secara holistik untuk menentukan urutan logis laporan (bukan urutan nama file/timestamp), pengelompokan konteks (grup: setup, build, deploy, verifikasi), dan *auto-rename* ke `1.png`..`x.png` sesuai alur narasi.
+  * **Repo-Guided Context Matching:** Ekstraksi *git commit history*, *file changes*, dan *milestone* dari repo project praktikum untuk cross-reference dengan screenshot (via flag `--repo <path>`).
   * Sistem *Knowledge Base* modular berbasis berkas konfigurasi (`YAML`/`JSON`) per mata kuliah yang mudah ditambah/diedit tanpa menyentuh kode inti.
   * Analisis visual berbasis Vision LLM (multimodal) untuk mengenali UI, terminal output, error message, kode sumber, atau diagram skematik.
   * Pembuatan otomatis file `inisiasi.txt` dengan format terstruktur yang 100% kompatibel dengan tool downstream.
@@ -32,8 +34,8 @@ Menjadi jembatan cerdas (*intelligent bridge*) tanpa friksi yang mengotomasi eks
 
 * ❌ **BATASAN TEGAS (OUT-OF-SCOPE):**
   * **DILARANG membuat generator laporan PDF/DOCX:** Sistem ini berhenti tepat setelah file `inisiasi.txt` berhasil digenerate dan divalidasi.
-  * **DILARANG memodifikasi atau me-rename file gambar asli:** File gambar hanya dibaca secara *read-only*.
-  * **Bukan tool capture/screenshot:** Pengguna mengambil dan me-rename screenshot secara mandiri sebelum menjalankan tools ini.
+  * **DILARANG memodifikasi atau me-rename file gambar asli tanpa konfirmasi:** File gambar hanya dibaca secara *read-only* kecuali mode `--organize` (auto-rename) yang meminta persetujuan.
+  * **Bukan tool capture/screenshot:** Pengguna mengambil screenshot secara mandiri sebelum menjalankan tools ini.
 
 ---
 
@@ -46,11 +48,14 @@ flowchart TD
     subgraph InputStage["1. Input Stage"]
         Imgs["Screenshot Folder\n(1.png, 2.png, ... x.png)"]
         MK["Pilihan Mata Kuliah\n(--matkul / -m)"]
+        Repo["[OPSIONAL] Repo Project\n(--repo /path/to/project)"]
     end
 
     subgraph CoreEngine["2. ImageContext-Generator Core Engine"]
         Scanner["Directory Scanner & Validator\n(Cek gap penomoran, MIME type)"]
         KBEngine["Course Knowledge Loader\n(Memuat config matkul & format prompt)"]
+        RepoCtx["Repo Context Extractor\n(git log, commits, file changes)"]
+        Director["Holistic Narrative Planner (Director)\nAnalisis global + grouping + urut logis"]
         VisionWorker["Vision Multimodal Synthesizer\n(Ekstraksi konteks teknis visual)"]
         Formatter["Format Adapter & Serializer\n(Render ke format inisiasi.txt)"]
     end
@@ -69,9 +74,12 @@ flowchart TD
 
     Imgs --> Scanner
     MK --> KBEngine
+    Repo --> RepoCtx
     KB1 & KB2 & KB3 & KB_Cust -.-> KBEngine
-    Scanner --> VisionWorker
-    KBEngine --> VisionWorker
+    Scanner --> Director
+    KBEngine --> Director
+    RepoCtx -.-> Director
+    Director --> VisionWorker
     VisionWorker --> Formatter
     Formatter --> InisiasiFile
     InisiasiFile --> ExistingTool
@@ -85,22 +93,24 @@ sequenceDiagram
     actor User as Avin (Xte-1412)
     participant CLI as ICG CLI Engine
     participant KB as Knowledge Base (YAML)
+    participant Repo as Repo Context (Git)
+    participant Director as Narrative Planner
     participant Vision as Multimodal AI Provider
     participant Out as File System (inisiasi.txt)
 
-    User->>CLI: Jalankan: icg generate --dir ./modul3 --matkul jarkom
-    CLI->>CLI: Validasi keberadaan folder & file 1.png..x.png
+    User->>CLI: Jalankan: icg generate --dir ./modul3 --matkul jarkom --repo ./project
+    CLI->>CLI: Validasi keberadaan folder & file screenshot
     CLI->>KB: Muat profil pengetahuan: jarkom.yaml
     KB-->>CLI: Terminologi, tone, struktur template & prompt rules
-
-    loop Tiap Gambar (1.png s.d. x.png)
-        CLI->>Vision: Kirim image + injected course context
-        Vision-->>CLI: Ekstraksi: Label, Konteks Praktikum, Arah Pembahasan
-    end
-
-    CLI->>CLI: Kompilasi dan validasi format inisiasi.txt
-    CLI->>Out: Tulis file inisiasi.txt ke direktori target
-    CLI-->>User: Selesai! (Menampilkan summary & preview 3 baris pertama)
+    CLI->>Repo: Ekstrak git log, commit messages, file changes
+    Repo-->>CLI: Timeline milestone (commit: setup docker, add CI, deploy)
+    CLI->>Director: Kirim SEMUA gambar + course context + repo timeline
+    Director->>Vision: Single multimodal request: 20 gambar + prompt naratif
+    Vision-->>Director: Urutan logis + grup + label/konteks/arah per gambar
+    Director->>Director: Validasi alur narasi, mapping ke 1.png..N.png
+    Director-->>CLI: Rencana final (urutan, rename map, inisiasi lines)
+    CLI->>Out: Tulis file inisiasi.txt (opsional: rename gambar dengan konfirmasi)
+    CLI-->>User: Selesai! (Summary + preview urutan naratif)
 ```
 
 ---

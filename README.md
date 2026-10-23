@@ -111,9 +111,9 @@ output_template:
 
 ---
 
-## 🗺️ Rencana Pengembangan (Roadmap)
+### 🗺️ Rencana Pengembangan (Roadmap)
 
-### ✅ v0.1.0 — MVP (Selesai)
+#### ✅ v0.1.0 — MVP (Selesai)
 - [x] Scanner screenshot berurutan (1.png ... x.png)
 - [x] Vision Engine dengan Google Gemini 1.5 Flash
 - [x] Knowledge Manager (YAML + PDF reference extraction)
@@ -121,19 +121,20 @@ output_template:
 - [x] Course configs: KEPL, PPG
 - [x] Tested: KEPL Per4 (17 screenshots → 17 entries)
 
-### 🔄 v0.2.0 — Kualitas & Robustness (Next)
-- [ ] **Retry & Backoff** untuk Vision API (handle rate limit/timeout)
-- [ ] **Fuzzy PDF-to-Pertemuan Mapping** (auto-match referensi yang nama file-nya tidak cocok persis)
-- [ ] **Validation Mode**: bandingkan output dengan `inisiasi.txt` ground truth (Per1-Per3) untuk hitung akurasi
-- [ ] **Batch Generate**: satu perintah generate semua pertemuan sekaligus (`generate -c kepl --all`)
+#### 🔄 v0.2.0 — Holistic Narrative Planner (Ingin Diuji Sekarang!)
+- [ ] **Director Mode:** Analisis holistik seluruh screenshot sekaligus (single request) untuk menentukan urutan logis narasi (setup → build → deploy → verify)
+- [ ] **Repo-Guided Context Matching:** Flag `--repo <path>` untuk ekstrak git timeline & cross-reference dengan screenshot (validasi alur praktikum teknis)
+- [ ] **Smart Grouping:** AI mengelompokkan screenshot secara otomis berdasarkan konteks (error vs troubleshooting vs konfigurasi)
+- [ ] **Auto-Rename Dry-Run:** Preview urutan narasi sebelum rename file asli (--dry-run flag)
+- [ ] **Fallback Local Sort:** Urutan berdasarkan timestamp filename (`mtime`) jika user nggak mau pakai AI
 
-### 🎯 v0.3.0 — Multi-Provider & UX
+#### 🎯 v0.3.0 — Multi-Provider & UX
 - [ ] Support OpenAI GPT-4o-mini / Anthropic Claude sebagai fallback vision provider
 - [ ] Interactive TUI mode (`python -m src.cli interactive`)
 - [ ] Export format JSON/Markdown selain plain text
 - [ ] Watch mode: auto-generate saat ada screenshot baru ditambah
 
-### 🚀 v1.0.0 — Production Ready
+#### 🚀 v1.0.0 — Production Ready
 - [ ] Package sebagai PyPI installable (`pip install imagecontext-generator`)
 - [ ] GitHub Action workflow untuk CI/test
 - [ ] Comprehensive test suite (pytest + golden files)
