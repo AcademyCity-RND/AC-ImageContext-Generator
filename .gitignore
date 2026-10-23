@@ -21,11 +21,14 @@ desktop.ini
 .idea/
 
 # Workspace data (Personal lab assets & generated outputs are ignored)
-workspace/**/screenshots/
-workspace/**/_reference/
+workspace/**/screenshots/*
+!workspace/**/screenshots/.gitkeep
+
+workspace/**/_reference/*
+!workspace/**/_reference/.gitkeep
+
 workspace/**/inisiasi/*
 !workspace/**/inisiasi/.gitkeep
-!workspace/**/.gitkeep
 
 # Company confidential / Internal Spec
 PRD.md
