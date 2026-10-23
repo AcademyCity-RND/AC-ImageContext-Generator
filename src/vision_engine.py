@@ -68,20 +68,49 @@ Aturan penting:
                                    plan_items: List[Dict[str, Any]],
                                    course_id: str,
                                    knowledge_manager: "KnowledgeManager",
-                                   output_file: str) -> Dict[str, Any]:
-        """Generate inisiasi.txt using Director Mode planned items and git context"""
+                                   output_file: str,
+                                   resume: bool = True) -> Dict[str, Any]:
+        """Generate inisiasi.txt using Director Mode planned items and git context with auto-save & resume"""
         console.print(f"\n[bold magenta]🎬 Running Director Mode Generation for {course_id}...[/bold magenta]")
         
         course_context = knowledge_manager.build_course_context(course_id)
+        out_path = Path(output_file)
+        out_path.parent.mkdir(parents=True, exist_ok=True)
         
-        generated_lines = []
         total = len(plan_items)
         generated = 0
         errors = 0
         
+        # Load existing progress if resuming
+        completed_indices = {}
+        if resume and out_path.exists():
+            for line in out_path.read_text(encoding="utf-8").splitlines():
+                if line.startswith("#") or not line.strip():
+                    continue
+                parts = line.split("|", 1)
+                if parts and ".png" in parts[0]:
+                    try:
+                        idx_num = int(parts[0].replace(".png", "").strip())
+                        completed_indices[idx_num] = line
+                    except ValueError:
+                        pass
+            if completed_indices:
+                console.print(f"[cyan]🔄 Found {len(completed_indices)} existing entries in {output_file}, resuming...[/cyan]")
+        
+        header = "# ========================================================\n# FORMAT INISIASI UTS - DIRECTOR MODE\n# ========================================================"
+        if not out_path.exists() or not completed_indices:
+            out_path.write_text(header + "\n", encoding="utf-8")
+            
+        all_results = dict(completed_indices)
+        
         console.print(f"   Memproses {total} screenshot terencana...")
         
         for idx, item in enumerate(plan_items, 1):
+            if idx in completed_indices:
+                console.print(f"   [{idx}/{total}] Sudah ada di cache ({item['path'].name}), skip.")
+                generated += 1
+                continue
+                
             path = item["path"]
             git_ctx = item["git_context"]
             
@@ -90,30 +119,24 @@ Aturan penting:
             result_line = self.analyze_image_with_context(
                 str(path),
                 git_context=git_ctx,
-                general_context=course_context
+                general_context=course_context,
+                planned_index=idx
             )
             
             if result_line:
-                # Strip leading numbering if model outputs "1.png |", "1. |", etc.
                 import re
                 cleaned = re.sub(r'^(?:(?:\d+\.png|\d+\.|\d+\))\s*\|\s*|\d+\.\s*)', '', result_line.strip())
                 clean_line = f"{idx}.png | {cleaned}"
-                generated_lines.append(clean_line)
+                all_results[idx] = clean_line
                 generated += 1
             else:
-                # Fallback jika gagal
-                generated_lines.append(f"{idx}.png | Dokumentasi Teknis {idx} | Konteks: {git_ctx} | Arah: Evaluasi UTS")
+                fallback_line = f"{idx}.png | Dokumentasi Teknis {idx} | Konteks: {git_ctx} | Arah: Evaluasi UTS"
+                all_results[idx] = fallback_line
                 errors += 1
                 
-        # Tulis ke file output
-        out_path = Path(output_file)
-        out_path.parent.mkdir(parents=True, exist_ok=True)
-        
-        header = "# ========================================================\n# FORMAT INISIASI UTS - DIRECTOR MODE\n# ========================================================"
-        footer = "# ========================================================"
-        
-        content = header + "\n" + "\n".join(generated_lines) + "\n" + footer
-        out_path.write_text(content, encoding="utf-8")
+            # Auto-save current progress
+            sorted_lines = [all_results[k] for k in sorted(all_results.keys())]
+            out_path.write_text(header + "\n" + "\n".join(sorted_lines) + "\n# ========================================================\n", encoding="utf-8")
         
         console.print(f"\n[green]✅ Director Mode generated successfully: {output_file}[/green]")
         return {"total": total, "generated": generated, "errors": errors}

@@ -179,13 +179,14 @@ def generate_director(
     course: str = typer.Option(..., "--course", "-c", help="Course ID (e.g., kepl, ppg)"),
     pertemuan: str = typer.Option(..., "--pertemuan", "-p", help="Pertemuan folder name (e.g., UTS)"),
     repo_path: str = typer.Option(None, "--repo", "-r", help="Path to project repository for git timeline matching"),
+    output: str = typer.Option(None, "--output", "-o", help="Custom output file path"),
     workspace_root: str = typer.Option("workspace", "--workspace", "-w", help="Workspace root directory"),
     knowledge_dir: str = typer.Option("knowledge/courses", "--knowledge", "-k", help="Knowledge base directory"),
 ):
     """Director Mode: Plan and generate inisiasi.txt using multimodal vision + Git timeline"""
     course_clean = course.upper()
     screenshots_dir = Path(workspace_root) / course_clean / "screenshots" / pertemuan
-    output_file = Path(workspace_root) / course_clean / "inisiasi" / f"{pertemuan}_director.txt"
+    output_file = Path(output) if output else Path(workspace_root) / course_clean / "inisiasi" / f"{pertemuan}_director.txt"
     
     if not screenshots_dir.exists():
         console.print(f"[red]❌ Directory not found: {screenshots_dir}[/red]")
