@@ -32,32 +32,34 @@ class VisionEngine:
         self.model = genai.GenerativeModel(model_name)
         self.model_name = model_name
     
-    def analyze_image_with_context(self, image_path: str, git_context: str, general_context: str = "") -> str:
+    def analyze_image_with_context(self, image_path: str, git_context: str, general_context: str = "", planned_index: int = None) -> str:
         """Analyze a single image with specific git commit context"""
         try:
             with Image.open(image_path) as img:
+                index_hint = f" (urutan ke-{planned_index} dalam narasi)" if planned_index else ""
                 prompt = f"""
 Git Commit Context: {git_context}
-General Context: {general_context}
+General Context: {general_context}{index_hint}
 
-Berdasarkan gambar ini, buat satu baris format inisiasi:
-{{index}}.png | {{label}} | Konteks: {{context}} | Arah: {{direction}}
+Berdasarkan gambar ini, buat satu baris format inisiasi (TANPA nomor indeks di depan):
+{{label}} | Konteks: {{context}} | Arah: {{direction}}
 
-Aturan:
-- Gunakan Git Commit Context untuk mengarahkan penjelasan teknis.
+Aturan penting:
+- Utamakan APA YANG NYATA TERLIHAT DI GAMBAR (GUI/terminal/browser/editor). JANGAN menyimpulkan GHCR jika gambar adalah Docker Desktop lokal. JANGAN menyimpulkan web browser jika gambar adalah Postman!
+- Gunakan Git Commit Context hanya sebagai pendukung topik/alur, BUKAN menggantikan fakta gambar.
 - label: Judul singkat gambar (maksimal 50 karakter)
-- Konteks: Penjelasan teknis apa yang ditampilkan (paling penting, singkat, teknis)
-- Arah: Arah pembahasan/pelajaran (mis: implementasi CI/CD, pengaturan docker, dll)
-- Bahasa Indonesia, teknis tapi ringkas, langsung esens
+- Konteks: Penjelasan teknis apa yang benar-benar tampak di layar (status response, endpoint, output terminal, struktur file)
+- Arah: Arah pembahasan/evaluasi teknis (CI/CD, optimasi Docker, autentikasi REST API, dll)
+- Bahasa Indonesia, teknis tapi ringkas, langsung esens.
+- Output HANYA satu baris format: Label | Konteks: ... | Arah: ... (JANGAN ada awalan "1.png |" atau penomoran).
 """
-                
+
                 response = self.model.generate_content([
                     img,
                     prompt
                 ])
                 
                 return response.text.strip() if response.text else ""
-            
         except Exception as e:
             console.print(f"[yellow]⚠️ Error analyzing {image_path}: {e}[/yellow]")
             return ""
@@ -92,11 +94,10 @@ Aturan:
             )
             
             if result_line:
-                # Pastikan nomor urut sesuai indeks baru hasil planning
-                # Format dari model: {index}.png | label | Konteks: ... | Arah: ...
-                # Kita normalisasi bagian depannya agar konsisten
-                parts = result_line.split("|", 1)
-                clean_line = f"{idx}.png | {parts[1].strip()}" if len(parts) > 1 else f"{idx}.png | {result_line}"
+                # Strip leading numbering if model outputs "1.png |", "1. |", etc.
+                import re
+                cleaned = re.sub(r'^(?:(?:\d+\.png|\d+\.|\d+\))\s*\|\s*|\d+\.\s*)', '', result_line.strip())
+                clean_line = f"{idx}.png | {cleaned}"
                 generated_lines.append(clean_line)
                 generated += 1
             else:
