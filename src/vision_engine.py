@@ -2,14 +2,26 @@ import os
 import json
 from pathlib import Path
 from typing import List, Dict, Any
+
+# Load .env file di direktori root proyek (auto-load)
+from dotenv import load_dotenv
+dotenv_path = Path(__file__).parent.parent / ".env"
+if dotenv_path.exists():
+    load_dotenv(dotenv_path=dotenv_path)
+else:
+    # fallback: coba direktori saat ini
+    load_dotenv()
+
 import google.generativeai as genai
 from rich.console import Console
 from rich.table import Table
 
+from PIL import Image
+
 console = Console()
 
 class VisionEngine:
-    def __init__(self, api_key: str = None, model_name: str = "gemini-1.5-flash"):
+    def __init__(self, api_key: str = None, model_name: str = "models/gemini-3.1-flash-lite"):
         """Initialize Gemini Vision engine"""
         self.api_key = api_key or os.environ.get("GOOGLE_API_KEY")
         if not self.api_key:
@@ -23,13 +35,12 @@ class VisionEngine:
     def analyze_image(self, image_path: str, context_prompt: str = "") -> str:
         """Analyze a single image using Gemini Vision"""
         try:
-            img = genai.upload_file(image_path)
-            
-            prompt = f"""
+            with Image.open(image_path) as img:
+                prompt = f"""
 {context_prompt}
 
 Berdasarkan gambar ini, buat satu baris format inisiasi:
-{index}.png | {label} | Konteks: {context} | Arah: {direction}
+{{index}}.png | {{label}} | Konteks: {{context}} | Arah: {{direction}}
 
 Aturan:
 - label: Judul singkat gambar (maksimal 50 karakter)
@@ -37,14 +48,13 @@ Aturan:
 - Arah: Arah pembahasan/pelajaran (mis: implementasi CI/CD, pengaturan docker, dll)
 - Bahasa Indonesia, teknis tapi ringkas, langsung esens
 """
-            
-            response = self.model.generate_content([
-                img,
-                prompt
-            ])
-            
-            genai.delete_file(img.name)
-            return response.text.strip() if response.text else ""
+                
+                response = self.model.generate_content([
+                    img,
+                    prompt
+                ])
+                
+                return response.text.strip() if response.text else ""
             
         except Exception as e:
             console.print(f"[yellow]⚠️ Error analyzing {image_path}: {e}[/yellow]")

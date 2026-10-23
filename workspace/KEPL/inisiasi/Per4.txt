@@ -1,19 +1,19 @@
 # ========================================================
-1. Dockerfile tahap builder: menggunakan composer:2.7 dan php:8.3-cli-alpine untuk install dependensi
-2. Dockerfile tahap runtime: konfigurasi non-root user www-data, HEALTHCHECK /up Laravel 11, EXPOSE 8000
-3. File .github/workflows/docker-publish.yml: konfigurasi trigger push branch main/dev dan izin write ke packages GHCR
-4. File .github/workflows/docker-publish.yml: implementasi step login GHCR, konversi nama repo ke lowercase, build-push tag commit SHA
-5. Terminal PowerShell: eksekusi docker build -t evolusi-api:tugas5 . dengan Docker BuildKit (17/17 steps)
-6. Terminal PowerShell: log proses build Docker selesai, kompilasi ekstensi PHP pdo_sqlite, dan pembuatan image final
-7. Terminal PowerShell: perintah docker images menampilkan perbandingan ukuran evolusi-api:tugas4 (950MB) vs tugas5 (337MB)
-8. Terminal PowerShell: docker run container laravel-api di port 8000, verifikasi user www-data, docker ps status healthy
-9. GitHub: tampilan CI workflow ci.yml sukses (Build & Test pass) dan perbandingan branch feature/docker-multistage
-10. GitHub Pull Request #15: feat Multi-stage Docker Alpine Non-root & GHCR (Tugas 5) pada repositori v2 dan v1
-11. GitHub Pull Request #16: Release Tugas 5, perbandingan pembersihan riwayat commit dari 16 commit menjadi 9 commit
-12. GitHub Actions status popover: 8 automated jobs sukses (CI unit test, build frontend, deploy Vercel, GHCR build) dan 1 waiting
-13. GitHub Actions deployment gate: dialog review pending deployments approval ke environment production
-14. GitHub perbandingan repositori: repositori v2 (personal) dengan status deployment production vs repositori v1 (organisasi KEPL2026)
-15. GitHub Packages (GHCR): package evolusi-pl-24-542159-sv-25009-v2 private dengan docker pull command dan repo v1
-16. Docker Desktop GUI: riwayat Builds history evolusi-pl (durasi 3m 09s rebuild awal, dan 2.4s serta 1.4s cached build)
-17. PaaS dashboard (Railway/Render): daftar service evolusi-api tugas4 (inactive/stopped, 949MB) dan tugas5 (active/running, 336MB)
+1.png | Docker Multi-Stage Build Awal | Konteks: Definisi stage 'builder' (composer) dan 'production' (php-alpine) untuk optimasi image | Arah: Implementasi copy artefak vendor, user non-root, dan HEALTHCHECK
+2.png | Docker Runtime Stage Configuration | Konteks: Optimasi image final dengan non-root user (www-data), inisialisasi environment, dan implementasi HEALTHCHECK Laravel 11. | Arah: Verifikasi build artifact dan integrasi pipeline CD ke registry.
+3.png | Konfigurasi Workflow GHCR | Konteks: Definisi GitHub Actions untuk otomatisasi push image ke GHCR dengan izin write packages. | Arah: Lengkapi step login ke registry, build, dan push image menggunakan metadata action.
+4.png | GitHub Actions Pipeline Issue | Konteks: Variabel `env.IMAGE_NAME` tidak didefinisikan dengan benar di level job sehingga gagal diakses pada `tags`. | Arah: Tambahkan `env` block pada level job atau gunakan `GITHUB_ENV` untuk persistence antar step.
+5.png | Docker Multi-Stage Build Initialization | Konteks: Proses build image tahap pertama menggunakan base image composer:2.7 untuk dependensi PHP. | Arah: Melanjutkan ke tahap build runtime (PHP-Alpine) dan optimasi layer final image.
+6.png | Docker Multi-Stage Build Completion | Konteks: Proses build image sukses dengan tahap builder (composer) dan stage-1 (alpine runtime) | Arah: Optimasi layer image dan verifikasi runtime container
+7.png | Manajemen Image Docker | Konteks: Daftar image lokal dengan status 'In Use' (U) dan penggunaan disk (termasuk image berat 13.1GB) | Arah: Optimasi multi-stage build dan pruning image untuk efisiensi penyimpanan CI/CD
+8.png | Verifikasi Docker Container | Konteks: Container `laravel-api` berjalan dengan user `www-data` dan status `healthy` melalui `HEALTHCHECK` | Arah: Validasi akses endpoint aplikasi dan integrasi pipeline CD ke registry
+9.png | GitHub Actions CI Success | Konteks: Pipeline berhasil menjalankan build, test, dan workflow publish ke GHCR untuk branch feature/docker-multistage. | Arah: Verifikasi image di GHCR dan konfigurasi deployment ke staging/production.
+10.png | Perbandingan PR Merge History | Konteks: Perbedaan jumlah commit (6 vs 4) dan status cek CI/CD pada dua branch yang berbeda. | Arah: Sinkronisasi commit melalui rebase/squash dan verifikasi workflow CI/CD sebelum merge.
+11.png | Pull Request Pipeline Refactoring | Konteks: Sinkronisasi merge commit history dan pembersihan log aktivitas pada PR #16 | Arah: Optimasi alur kerja Git rebase dan validasi status CI sebelum merge final
+12.png | Validasi Pipeline CI/CD GitHub Actions | Konteks: Menampilkan status eksekusi workflow (8 sukses, 1 pending) pada repository, termasuk integrasi GHCR, testing, dan deployment gating. | Arah: Optimasi *deployment gates* dan verifikasi *healthcheck* untuk *continuous delivery* ke *production*.
+13.png | Approval Gate Deployment | Konteks: GitHub Actions menunggu persetujuan manual untuk *deploy* ke lingkungan *production* setelah *pipeline* CI sukses. | Arah: Verifikasi stabilitas *build* dan otomatisasi *rollback* jika *deployment* gagal.
+14.png | Perbandingan Repository v1 dan v2 | Konteks: Sinkronisasi commit merge pull request #16 antara repository v1 dan v2 untuk integrasi CI/CD. | Arah: Verifikasi pipeline GitHub Actions, pembaruan README, dan penyelarasan metadata repository.
+15.png | Perbandingan GHCR Registry dan Source Code Repository | Konteks: Sinkronisasi build image `ghcr.io` dengan source code `Laravel 11` di GitHub | Arah: Implementasi pipeline otomatis dari `git push` ke `GHCR` dan deployment ke PaaS
+16.png | Monitoring Build Docker | Konteks: Riwayat build lokal menggunakan Docker Desktop (BuildKit) dengan variasi durasi build. | Arah: Optimasi caching layer Dockerfile dan integrasi build ke pipeline GitHub Actions.
+17.png | Manajemen Container Registry & Deployment | Konteks: Riwayat image `evolusi-api` di GHCR untuk `tugas4` (inactive) dan `tugas5` (active) | Arah: Optimalisasi CI/CD pipeline, image tagging, dan manajemen resource container
 # ========================================================
