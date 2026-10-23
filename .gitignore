@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.venv/
+env/
+venv/
+ENV/
+
+# Environment variables
+.env
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+
+# Large binaries & cache (optional, tapi workspace screenshot bisa diignore jika repo ingin bersih, 
+# biarkan di-track jika ingin workspace ikut ter-backup di repo)
+# workspace/**/screenshots/
+# workspace/**/_reference/
