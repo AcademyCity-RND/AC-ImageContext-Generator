@@ -238,8 +238,9 @@ def test_sec01_cli_does_not_leak_subject_into_prompt(tmp_path, monkeypatch):
 # ---------------------------------------------------------------------------
 def test_sec05_api_key_not_in_instance_vars(monkeypatch):
     monkeypatch.setenv("GOOGLE_API_KEY", "AIzaFakeTestingKey000000000000000")
-    with patch("src.vision_engine.genai.configure"), patch("src.vision_engine.genai.GenerativeModel"):
+    with patch("src.vision_engine.genai.Client") as mock_client:
         engine = VisionEngine()
+        mock_client.assert_called_once_with(api_key="AIzaFakeTestingKey000000000000000")
     assert "api_key" not in vars(engine)
     assert "AIza" not in repr(engine)
 
