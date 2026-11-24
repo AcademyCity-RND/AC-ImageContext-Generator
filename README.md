@@ -13,8 +13,8 @@ Generator otomatis untuk mengekstrak konteks visual dari serangkaian gambar tang
 
 ### Instalasi
 ```bash
-git clone https://github.com/AcademyCity-RND/ImageContext-Generator.git
-cd ImageContext-Generator
+git clone https://github.com/AcademyCity-RND/AC-ImageContext-Generator.git
+cd AC-ImageContext-Generator
 pip install -r requirements.txt
 cp .env.example .env
 # Edit .env dan isi GOOGLE_API_KEY
@@ -153,7 +153,7 @@ LOG_LEVEL=INFO
 ## 🔗 Ekosistem
 
 ICG adalah **front-end compiler** (pixels → `inisiasi.txt`). Output-nya dikonsumsi oleh
-**[MyLaprak](https://github.com/Avin1731/MyLaprak)** — back-end compiler (IR → laporan LaTeX).
+**[MyLaprak](https://github.com/AcademyCity-RND/AC-MyLaprak)** — back-end compiler (IR → laporan LaTeX).
 
 Alur lengkap: `make-laprak-info → /icg-renaming → /icg-contextgenerate → breakdown-matkul → make-laprak`.
 Lihat `plan.md` di Desktop untuk kontrak IR (`inisiasi.txt` enriched: `type`, `group`, `width_hint`, `section`).
