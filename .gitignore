@@ -10,6 +10,8 @@ ENV/
 
 # Environment variables
 .env
+.env.*
+!.env.example
 
 # OS files
 .DS_Store
@@ -25,3 +27,10 @@ workspace/
 
 # Company confidential / Internal Spec
 PRD.md
+
+# Agent-generated working docs (REVIEW, findings, work order, ad-hoc probes) — NOT official docs.
+# Official docs live in docs/ and are tracked deliberately.
+REVIEW_*.md
+SECURITY_FINDINGS.md
+work_order.md
+probe_crossbucket.py
