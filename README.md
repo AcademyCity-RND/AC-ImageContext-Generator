@@ -158,7 +158,7 @@ ICG adalah **front-end compiler** (pixels → `inisiasi.txt`). Output-nya dikons
 Alur lengkap: `make-laprak-info → /icg-renaming → /icg-contextgenerate → breakdown-matkul → make-laprak`.
 Lihat `plan.md` di Desktop untuk kontrak IR (`inisiasi.txt` enriched: `type`, `group`, `width_hint`, `section`).
 
-Skill ICG juga di-vendor di repo MyLaprak (`skills/ICG-Renaming/`, `skills/ICG-ContextGenerate/`).
+Skill ICG juga di-vendor di repo MyLaprak (`skills/icg-renaming/`, `skills/icg-contextgenerate/`).
 
 ---
 
